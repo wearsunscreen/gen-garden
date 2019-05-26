@@ -1,7 +1,7 @@
 {
     "type": "package",
     "name": "wearsunscreen/gen-garden",
-    "summary": "A package to ease creation of generative art.",
+    "summary": "A package for creating generative art.",
     "license": "BSD-3-Clause",
     "version": "1.0.0",
     "exposed-modules": [
