@@ -1,8 +1,7 @@
 module GenGarden exposing
-    ( init, update, view, subscriptions
-    , circle, line, rect
+    ( init, update, view, subscriptions, Drawing, Model, Msg
+    , circle, ellipse, grid, line, rect
     , Slider
-    , Drawing, Model, Msg, ellipse, grid
     )
 
 {-| A `GenGarden` displays an image generated from a draw function passed
@@ -12,12 +11,12 @@ to the draw function.
 
 # Using GenGarden
 
-@docs init, update, view, subscriptions
+@docs init, update, view, subscriptions, Drawing, Model, Msg
 
 
 # Drawing in the GenGarden
 
-@docs circle, line, rect
+@docs circle, ellipse, grid, line, rect
 
 
 # Slider
