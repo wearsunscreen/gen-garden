@@ -42,7 +42,7 @@ import Time exposing (Posix, millisToPosix, posixToMillis)
 import Tuple exposing (first)
 
 
-{-| The model for the GenGarden. One must be included in the app's model.
+{-| The model for the `GenGarden`. One must be included in the app's model.
 -}
 type alias Model =
     { frame : Float
@@ -53,9 +53,9 @@ type alias Model =
     }
 
 
-{-| The Msg for the GenGarden used for timing frames drawing and
+{-| The `Msg` for the `GenGarden` used for timing frames drawing and
 slider interation. The app must define one of its Msg types to
-include a GenGarden.Msg. For example:
+include a `GenGarden.Msg`. For example:
 
     type Msg
         = GardenMsg GenGarden.Msg
@@ -93,6 +93,11 @@ allSliderMsgs model =
     List.take (Basics.min (length model.sliders) (length msgs)) msgs
 
 
+{-| The `Slider` record describes the values needing to display a slider.
+A list of `Slider`s must be passed to `GenGarden.init`.
+The label of the `Slider` will serve as the key to the dictionary of
+current values sent to the draw functions.
+-}
 type alias Slider =
     { label : String
     , max : Float
@@ -125,8 +130,8 @@ replaceElement index x list =
     List.take index list ++ (x :: List.drop (index + 1) list)
 
 
-{-| Initialize the GenGarden. The \`frameRate' is the length of each animation
-frame in milliseconds. 'frameRate' of 0 or less will only update on setting
+{-| Initialize the GenGarden. The `frameRate` is the length of each animation
+frame in milliseconds. A `frameRate` of 0 or less will only update on setting
 changes.
 A slider will be created for each setting in list of
 settings. This example will create a GenGarden that updated once a second
@@ -207,7 +212,7 @@ updateSlider constructor sliderMsg index model =
     ( newModel, newCmd )
 
 
-{-| Updates the GenGarden model. Example of usage:
+{-| Updates the `GenGarden` model. Example of usage:
 
     type Msg
         = GardenMsg GenGarden.Msg
@@ -300,7 +305,7 @@ subscriptions model =
 
 
 {-| Display the GenGarden. Provide the drawing function in `drawFrame`, and the
-GenGarden.Model in 'model\`. Example of usage:
+`GenGarden.Model` in 'model\`. Example of usage:
 
     type Msg
         = GardenMsg GenGarden.Msg
@@ -361,7 +366,7 @@ viewBox l r w h vpw =
 --
 
 
-{-| Drawing functions of `GenGarden` return a Drawing :
+{-| Drawing functions return a `Drawing`.
 -}
 type alias Drawing msg =
     Svg.Svg msg
