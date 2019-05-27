@@ -22,7 +22,7 @@ to the draw function.
 
 # Slider
 
-@docs Slider, getSetting
+@docs Slider
 
 -}
 
