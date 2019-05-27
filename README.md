@@ -4,8 +4,10 @@ A generative art framework written in Elm 0.19
 
 `GenGarden` will render a draw function and display sliders to change user-provided variables.  
 
+View [an example here](https://johncrane.gitlab.io/gengarden-lines/). 
 
-## Adding GenGarden to an app
+
+## Adding GenGarden to your app
 
 Include a `GenGarden.Model` in your app's model. 
 ```elm
@@ -73,7 +75,7 @@ view model =
 ```
 
 Finally provide a draw function to be passed to `GenGarden.view`.
-```
+```elm
 {-| Redraw the image area on each frame
 -}
 drawFrame : Dict.Dict String Float -> Float -> List (GenGarden.Drawing msg)
@@ -82,15 +84,16 @@ drawFrame _ frameNumber =
     ]
 ```
 
-## Drawing
 
-Drawing coordinates are expressed in a tuple of floats, (x, y). The (0, 0) coordinate is at the center of the drawing area. The drawing area is 200 units high by 200 wide.
+## Drawing -- How to draw your GenGarden
+
+Drawing coordinates are expressed as a tuple of floats, (x, y). The (0, 0) coordinate is at the center of the drawing area. The drawing area is 200 units high by 200 wide. 
 
 `GenGarden` provides `circle`, `ellipse`, `line`, and `rect` functions to draw with. Each function returns a "drawing". Each drawing can have children drawings. `Svg.Attributes` can be added to each drawing to allow transforms and other visual specifications. Attributes are inherited from parent drawings. 
 
 `grid` will display the x and y axes. 
 
-The drawing function is passed to via `Gengarden.view`. Example:
+The drawing function is passed via `Gengarden.view`. Example:
 
 ```elm
 drawFrame : List GenGarden.Slider -> Float -> List (GenGarden.Drawing msg)
@@ -108,3 +111,37 @@ view model =
 ```
 
 
+## Sliders - Adding runtime variables to your drawing
+
+You can add sliders to change variables to the runtime drawing. For each variable define a `GenGarden.Slider`. Pass a list of slider definitions to `GenGarden.init`. Example:
+
+```elm
+mySliders : List GenGarden.Slider
+mySliders =
+    [ { label = "Length of lines"
+      , max = 100
+      , min = 1
+      , step = 1
+      , value = 50
+      }
+    , { label = "Circle radius"
+      , max = 99
+      , min = 0
+      , step = 1
+      , value = 50
+      }
+    , { label = "Circle alpha"
+      , max = 1.0
+      , min = 0.0
+      , step = 0.05
+      , value = 0.7
+      }
+    ]
+    
+init : () -> ( Model, Cmd Msg )
+init _ =
+    ( { garden = GenGarden.init 0 mySliders
+      }
+    , Cmd.none
+    )
+```
