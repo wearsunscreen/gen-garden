@@ -67,7 +67,7 @@ update msg model =
 
 view : Model -> Document Msg
 view model =
-    { title = "Gen Garden - Flying Lines"
+    { title = "Gen Garden"
     , body =
         GenGarden.view drawFrame model.garden
             |> List.map (Html.map GardenMsg)
@@ -103,7 +103,7 @@ drawFrame settings frame =
         
 view : Model -> Document Msg
 view model =
-    { title = "Gen Garden example"
+    { title = "Gen Garden"
     , body =
         GenGarden.view drawFrame model.garden
             |> List.map (Html.map GardenMsg)

@@ -42,6 +42,8 @@ import Time exposing (Posix, millisToPosix, posixToMillis)
 import Tuple exposing (first)
 
 
+{-| The model for the GenGarden. One must be included in the app's model.
+-}
 type alias Model =
     { frame : Float
     , frameRate : Float
@@ -51,6 +53,14 @@ type alias Model =
     }
 
 
+{-| The Msg for the GenGarden used for timing frames drawing and
+slider interation. The app must define one of its Msg types to
+include a GenGarden.Msg. For example:
+
+    type Msg
+        = GardenMsg GenGarden.Msg
+
+-}
 type Msg
     = Tick Posix
     | SliderMsg1 Slider_Msg
@@ -297,7 +307,7 @@ GenGarden.Model in 'model\`. Example of usage:
 
     view : Model -> Document Msg
     view model =
-        { title = "Gen Garden - Flying Lines"
+        { title = "Gen Garden"
         , body =
             List.map (Html.map GardenMsg) <|
                 GenGarden.view drawFrame model.garden
@@ -351,10 +361,23 @@ viewBox l r w h vpw =
 --
 
 
+{-| Drawing functions of `GenGarden` return a Drawing :
+-}
 type alias Drawing msg =
     Svg.Svg msg
 
 
+{-| Draw a circle. Example of usage:
+
+    type Msg
+        = GardenMsg GenGarden.Msg
+
+    drawFrame : List GenGarden.Slider -> Float -> List (GenGarden.Drawing msg)
+    drawFrame settings frame =
+        GenGarden.circle ( -5, -5 ) 20 "red" [] []
+            :: GenGarden.grid
+
+-}
 circle :
     ( Float, Float )
     -> Float
@@ -368,6 +391,17 @@ circle ( cx, cy ) radius color attributes children =
         children
 
 
+{-| Draw an ellipse. Example of usage:
+
+    type Msg
+        = GardenMsg GenGarden.Msg
+
+    drawFrame : List GenGarden.Slider -> Float -> List (GenGarden.Drawing msg)
+    drawFrame settings frame =
+        GenGarden.ellipse ( -5, -5 ) 4 8 "red" [] []
+            :: GenGarden.grid
+
+-}
 ellipse :
     ( Float, Float )
     -> Float
@@ -447,6 +481,16 @@ line ( xa, ya ) ( xb, yb ) color attributes children =
         children
 
 
+{-| Draw a rect. Example of usage:
+
+    type Msg
+        = GardenMsg GenGarden.Msg
+
+    drawFrame : List GenGarden.Slider -> Float -> List (GenGarden.Drawing msg)
+    drawFrame settings frame =
+        [ GenGarden.rect (( -5, -5 ) ( 20, 15 )) "red" [] [] ]
+
+-}
 rect :
     ( ( Float, Float ), ( Float, Float ) )
     -> String
