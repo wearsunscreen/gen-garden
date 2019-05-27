@@ -2,23 +2,28 @@
 
 A generative art framework written in Elm 0.19
 
-`GenGarden` will render a user-provided draw function and display sliders to change user-provided variables to the draw function.  
+`GenGarden` will render a draw function and display sliders to change user-provided variables.  
 
 
 ## Adding GenGarden to an app
 
-`GenGarden` provides `init`, `subscriptions`, `update`, and `view` functions to integrate into an app. 
-
+Include a `GenGarden.Model` in your app's model. 
 ```elm
 type alias Model =
     { garden : GenGarden.Model
     }
+```
 
+Define a `Msg` type that contains a `GenGarden.Msg`.
 
+```elm
 type Msg
     = GardenMsg GenGarden.Msg
+```
 
+Use `GenGarden`'s `init`, `subscriptions`, `update`, and `view` functions to integrate into your app. 
 
+```elm
 main =
     Browser.document
         { init = init
@@ -65,7 +70,10 @@ view model =
         GenGarden.view drawFrame model.garden
             |> List.map (Html.map GardenMsg)
     }
-    
+```
+
+Finally provide a draw function to be passed to `GenGarden.view`.
+```
 {-| Redraw the image area on each frame
 -}
 drawFrame : Dict.Dict String Float -> Float -> List (GenGarden.Drawing msg)
@@ -74,5 +82,29 @@ drawFrame _ frameNumber =
     ]
 ```
 
+## Drawing
+
+Drawing coordinates are expressed in a tuple of floats, (x, y). The (0, 0) coordinate is at the center of the drawing area. The drawing area is 200 units high by 200 wide.
+
+`GenGarden` provides `circle`, `ellipse`, `line`, and `rect` functions to draw with. Each function returns a "drawing". Each drawing can have children drawings. `Svg.Attributes` can be added to each drawing to allow transforms and other visual specifications. Attributes are inherited from parent drawings. 
+
+`grid` will display the x and y axes. 
+
+The drawing function is passed to via `Gengarden.view`. Example:
+
+```elm
+drawFrame : List GenGarden.Slider -> Float -> List (GenGarden.Drawing msg)
+drawFrame settings frame =
+    GenGarden.circle ( -5, -5 ) 20 "red" [] []
+        :: GenGarden.grid
+        
+view : Model -> Document Msg
+view model =
+    { title = "Gen Garden example"
+    , body =
+        GenGarden.view drawFrame model.garden
+            |> List.map (Html.map GardenMsg)
+    }
+```
 
 
