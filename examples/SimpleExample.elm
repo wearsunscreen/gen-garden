@@ -118,7 +118,7 @@ subscriptions model =
 
 view : Model -> Document Msg
 view model =
-    { title = "Gen Garden - Flying Lines"
+    { title = "Gen Garden - Simple Example"
     , body =
         GenGarden.view drawFrame model.garden
             |> List.map (Html.map GardenMsg)
