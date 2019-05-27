@@ -1,6 +1,6 @@
 # gen-garden
 
-A generative art framework written in Elm 0.19
+A generative art framework written in Elm.
 
 `GenGarden` will render a draw function and display sliders to change user-provided variables.  
 
