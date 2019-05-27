@@ -1,6 +1,6 @@
 # gen-garden
 
-A generative art framework written in Elm 0.19
+A generative art framework written in Elm.
 
 `GenGarden` will render a draw function and display sliders to change user-provided variables.  
 
@@ -144,4 +144,27 @@ init _ =
       }
     , Cmd.none
     )
+```
+
+The current slider values are passed to the draw function as a dictionary. The label of the slider serves as the key to the dictionary values. Example:
+
+```elm
+drawFrame : Dict.Dict String Float -> Float -> List (GenGarden.Drawing msg)
+drawFrame settings frameNumber =
+    let
+        x =
+            Dict.get "Length of lines" settings |> withDefault 50
+
+        r =
+            Dict.get "Circle radius" settings |> withDefault 30
+
+        color =
+            "rgba(50,250,50,"
+                ++ String.fromFloat (Dict.get "Circle alpha" settings |> withDefault 0.5)
+                ++ ")"
+    in
+    [ GenGarden.line ( x * -1, x * -1 ) ( x, x ) "red" [] []
+    , GenGarden.circle ( 0, 0 ) r color [] []
+    , GenGarden.line ( x * -1, x ) ( x, x * -1 ) "coral" [] []
+    ]
 ```
