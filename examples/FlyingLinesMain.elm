@@ -1,4 +1,4 @@
-module Main exposing (init, main, view)
+module Main exposing (main)
 
 import Browser exposing (Document, document)
 import Dict
@@ -29,31 +29,31 @@ mySliders =
       , max = 1
       , min = 0
       , step = 1
-      , value = 1
+      , value = 0
       }
     , { label = "x1 Magnitude"
-      , max = 100.0
-      , min = 0.0
-      , step = 1
-      , value = 70.0
+      , max = 50.0
+      , min = 1.0
+      , step = 0.2
+      , value = 35.0
       }
     , { label = "x1 Frequency"
-      , max = 50.0
+      , max = 40.0
       , min = 0
-      , step = 0.5
-      , value = 10
+      , step = 0.25
+      , value = 5
       }
-    , { label = "y2 Magnitude"
-      , max = 100.0
-      , min = -0.0
+    , { label = "y1 Magnitude"
+      , max = 80.0
+      , min = 1.0
       , step = 1
-      , value = 55
+      , value = 45
       }
-    , { label = "y2 Frequency"
-      , max = 50.0
+    , { label = "y1 Frequency"
+      , max = 40.0
       , min = 0
-      , step = 0.5
-      , value = 15
+      , step = 0.25
+      , value = 5
       }
     ]
 
@@ -134,7 +134,7 @@ drawTrail color settings xPlot yPlot ticks =
                 []
                 []
     in
-    List.map dot (floatRange ticks (ticks + 400))
+    List.map dot (floatRange ticks (ticks + 800))
 
 
 {-| utility to give a list of floats, use like List.range
@@ -152,9 +152,9 @@ x1 settings ticks =
             Dict.get "x1 Frequency" settings |> withDefault 10
 
         mag =
-            Dict.get "x1 Magnitude" settings |> withDefault 70
+            Dict.get "x1 Magnitude" settings |> withDefault 20
     in
-    ((ticks / 10 |> sin) * 25) + ((ticks / frq |> sin) * mag)
+    ((ticks / 4 |> sin) * 40) + ((ticks / frq |> sin) * mag)
 
 
 y1 : Plotter
@@ -166,31 +166,17 @@ y1 settings ticks =
         mag =
             Dict.get "y1 Magnitude" settings |> withDefault 55
     in
-    ((ticks / 20 |> cos) * 80) + ((ticks / frq |> cos) * mag)
+    (ticks / 4 |> cos) * 40 + ((ticks / frq |> sin) * mag)
 
 
 x2 : Plotter
 x2 settings ticks =
-    let
-        frq =
-            Dict.get "y2 Frequency" settings |> withDefault 0.5
-
-        mag =
-            Dict.get "y2 Magnitude" settings |> withDefault 35
-    in
-    ((ticks / 10 |> sin) * 15) + ((ticks / frq |> sin) * mag)
+    (ticks / 8 |> sin) * 50 + ((ticks / 12 |> sin) * 50)
 
 
 y2 : Plotter
 y2 settings ticks =
-    let
-        frq =
-            Dict.get "y2 Frequency" settings |> withDefault 0.5
-
-        mag =
-            Dict.get "y2 Magnitude" settings |> withDefault 35
-    in
-    ((ticks / 20 |> cos) * 40) + ((ticks / frq |> cos) * mag)
+    (ticks / 8 |> cos) * 80
 
 
 
@@ -209,7 +195,7 @@ type Msg
 
 
 main =
-    Browser.document
+    Browser.element
         { init = init
         , subscriptions = subscriptions
         , update = update

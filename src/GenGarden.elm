@@ -2,6 +2,7 @@ module GenGarden exposing
     ( init, update, view, subscriptions, Drawing, Model, Msg
     , circle, ellipse, grid, line, rect
     , Slider
+    , viewCanvas
     )
 
 {-| A `GenGarden` displays an image generated from a draw function passed
@@ -25,6 +26,8 @@ to the draw function.
 
 -}
 
+import Canvas
+import Color
 import DOM
 import Dict
 import Html exposing (Html, div, input)
@@ -304,8 +307,8 @@ subscriptions model =
         )
 
 
-{-| Display the GenGarden. Provide the drawing function in `drawFrame`, and the
-`GenGarden.Model` in 'model\`. Example of usage:
+{-| Displays the GenGarden in SVG. Provide the drawing function in `drawFrame`,
+and the `GenGarden.Model` in 'model\`. Example of usage:
 
     type Msg
         = GardenMsg GenGarden.Msg
@@ -317,6 +320,10 @@ subscriptions model =
             List.map (Html.map GardenMsg) <|
                 GenGarden.view drawFrame model.garden
         }
+
+The first argument to `view` this is a function provided by the app to
+draw the frame. It is given the current settings from the sliders and the current
+frame number and returns a list `Shape`s.
 
 -}
 view :
@@ -333,6 +340,48 @@ view drawFrame model =
 
 canvasWidth =
     200
+
+
+canvasHeight =
+    canvasWidth
+
+
+{-| Displays the GenGarden on and HTML Canvas. Provide the drawing function in
+`drawFrame`, and the `GenGarden.Model` in `model`. Example of usage:
+
+    view : Model -> Document Msg
+    view model =
+        { title = "Gen Garden"
+        , body =
+            GenGarden.viewCanvas drawFrame model.garden
+                |> List.map (Html.map GardenMsg)
+        }
+
+The first argument to `viewCanvas` this is a function provided by the app to
+draw the frame. It is given the current settings from the sliders and the current
+frame number and returns a list `Shape`s.
+
+-}
+viewCanvas :
+    (Dict.Dict String Float -> Float -> List Canvas.Shape)
+    -> Model
+    -> List (Html Msg)
+viewCanvas drawFrame model =
+    let
+        f slider constructor =
+            slider_view slider |> Html.map constructor
+    in
+    Canvas.toHtml ( canvasWidth, canvasHeight )
+        []
+        [ Canvas.shapes [ Canvas.fill Color.white, Canvas.stroke <| Color.rgb255 0 153 255 ]
+            (Canvas.rect
+                ( 0, 0 )
+                canvasWidth
+                canvasHeight
+                :: drawFrame model.settings model.frame
+            )
+        ]
+        :: List.map2 f model.sliders (allSliderMsgs model)
 
 
 viewSvg :
