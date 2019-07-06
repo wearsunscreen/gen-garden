@@ -1,8 +1,8 @@
 module GenGarden exposing
-    ( init, update, view, subscriptions, Drawing, Model, Msg
+    ( init, update, view, viewCanvas, subscriptions, Drawing, Model, Msg
     , circle, ellipse, grid, line, rect
     , Slider
-    , viewCanvas
+    , listOfRandomInts
     )
 
 {-| A `GenGarden` displays an image generated from a draw function passed
@@ -12,10 +12,10 @@ to the draw function.
 
 # Using GenGarden
 
-@docs init, update, view, subscriptions, Drawing, Model, Msg
+@docs init, update, view, viewCanvas, subscriptions, Drawing, Model, Msg
 
 
-# Drawing in the GenGarden
+# Drawing with SVG in the GenGarden
 
 @docs circle, ellipse, grid, line, rect
 
@@ -23,6 +23,11 @@ to the draw function.
 # Slider
 
 @docs Slider
+
+
+# Utility functions
+
+@docs listOfRandomInts
 
 -}
 
@@ -183,6 +188,28 @@ init frameRate mySliders =
     }
 
 
+{-| Return a list of pseudo-randomly generated positive Ints. The value will be
+between 0 and maxValue. An Int must be provided as a seed.
+-}
+listOfRandomInts : Int -> Int -> Int -> List Int
+listOfRandomInts length maxValue seedInt =
+    let
+        listOfRandomInts_ : Int -> Int -> Random.Seed -> List ( Int, Random.Seed )
+        listOfRandomInts_ count maxV seed =
+            if count == 0 then
+                []
+
+            else
+                let
+                    ( v, seed_ ) =
+                        Random.step (Random.int 0 maxV) seed
+                in
+                ( v, seed_ ) :: listOfRandomInts_ (count - 1) maxV seed_
+    in
+    listOfRandomInts_ length maxValue (Random.initialSeed seedInt)
+        |> List.map Tuple.first
+
+
 px : Int -> String
 px v =
     fromInt v ++ "px"
@@ -294,13 +321,13 @@ subscriptions model =
             else
                 []
 
-        pred : Slider_Model -> (Slider_Msg -> Msg) -> Sub Msg
-        pred slider constructor =
+        build : Slider_Model -> (Slider_Msg -> Msg) -> Sub Msg
+        build slider constructor =
             Sub.map constructor <| slider_subscriptions slider
     in
     Sub.batch
         (List.map2
-            pred
+            build
             model.sliders
             (allSliderMsgs model)
             ++ fr
@@ -320,10 +347,6 @@ and the `GenGarden.Model` in 'model\`. Example of usage:
             List.map (Html.map GardenMsg) <|
                 GenGarden.view drawFrame model.garden
         }
-
-The first argument to `view` this is a function provided by the app to
-draw the frame. It is given the current settings from the sliders and the current
-frame number and returns a list `Shape`s.
 
 -}
 view :
@@ -346,7 +369,7 @@ canvasHeight =
     canvasWidth
 
 
-{-| Displays the GenGarden on and HTML Canvas. Provide the drawing function in
+{-| Displays the GenGarden on an HTML Canvas. Provide the drawing function in
 `drawFrame`, and the `GenGarden.Model` in `model`. Example of usage:
 
     view : Model -> Document Msg
@@ -357,13 +380,9 @@ canvasHeight =
                 |> List.map (Html.map GardenMsg)
         }
 
-The first argument to `viewCanvas` this is a function provided by the app to
-draw the frame. It is given the current settings from the sliders and the current
-frame number and returns a list `Shape`s.
-
 -}
 viewCanvas :
-    (Dict.Dict String Float -> Float -> List Canvas.Shape)
+    (Dict.Dict String Float -> Float -> List Canvas.Renderable)
     -> Model
     -> List (Html Msg)
 viewCanvas drawFrame model =
@@ -373,14 +392,11 @@ viewCanvas drawFrame model =
     in
     Canvas.toHtml ( canvasWidth, canvasHeight )
         []
-        [ Canvas.shapes [ Canvas.fill Color.white, Canvas.stroke <| Color.rgb255 0 153 255 ]
-            (Canvas.rect
-                ( 0, 0 )
-                canvasWidth
-                canvasHeight
-                :: drawFrame model.settings model.frame
-            )
-        ]
+        (Canvas.shapes
+            [ Canvas.fill Color.white, Canvas.stroke <| Color.rgb255 0 53 155 ]
+            [ Canvas.rect ( 0, 0 ) canvasWidth canvasHeight ]
+            :: drawFrame model.settings model.frame
+        )
         :: List.map2 f model.sliders (allSliderMsgs model)
 
 
